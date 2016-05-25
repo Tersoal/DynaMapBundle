@@ -1,0 +1,25 @@
+{
+    "name": "tersoal/dynamap",
+    "type": "symfony-bundle",
+    "description": "Dynamic entities for Symfony and Doctrine.",
+    "keywords": ["Doctrine", "Symfony", "Dynamic entities"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sergio Rebollo",
+            "email": "tersoald20@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.5.9",
+        "symfony/symfony": ">=2.8",
+        "doctrine/orm": ">=2.4",
+        "cocur/slugify": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tersoal\\DynaMapBundle\\": ""
+        }
+    }
+}

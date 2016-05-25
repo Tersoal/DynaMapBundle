@@ -1,0 +1,99 @@
+parameters:
+    tersoal.dyna_map.master_entity: ~
+    tersoal.dyna_map.field_entity: ~
+    tersoal.dyna_map.fields.white_list: ~
+    tersoal.dyna_map.fields.black_list: ~
+    tersoal.dyna_map.model.route.parameter: ~
+    tersoal.dyna_map.model.interface.class: Tersoal\DynaMapBundle\Model\ModelInterface
+    tersoal.dyna_map.model.subscriber.class: Tersoal\DynaMapBundle\EventSubscriber\ModelSubscriber
+    tersoal.dyna_map.schema.subscriber.class: Tersoal\DynaMapBundle\EventSubscriber\SchemaSubscriber
+    tersoal.dyna_map.mastertype.extension.class: Tersoal\DynaMapBundle\Form\Extension\MasterTypeExtension
+    tersoal.dyna_map.fieldtype.extension.class: Tersoal\DynaMapBundle\Form\Extension\FieldTypeExtension
+    tersoal.dyna_map.modeltype.extension.class: Tersoal\DynaMapBundle\Form\Extension\ModelTypeExtension
+    tersoal.dyna_map.fieldtype.service.class: Tersoal\DynaMapBundle\Service\FieldTypeService
+    tersoal.dyna_map.model.tool.class: Tersoal\DynaMapBundle\Tool\ModelTool
+    tersoal.dyna_map.command.update_schema.class: Tersoal\DynaMapBundle\Command\UpdateSchemaCommand
+    tersoal.dyna_map.model.twig_extension.class: Tersoal\DynaMapBundle\Twig\ModelExtension
+
+services:
+    tersoal.dyna_map.model.subscriber:
+        class: '%tersoal.dyna_map.model.subscriber.class%'
+        tags:
+            - {name: doctrine.event_subscriber }
+        arguments:
+            - '%tersoal.dyna_map.master_entity%'
+            - '%tersoal.dyna_map.field_entity%'
+            - '%tersoal.dyna_map.model.route.parameter%'
+            - '@request_stack'
+            - '@router'
+            - '@tersoal.dyna_map.model.tool'
+
+    tersoal.dyna_map.schema.subscriber:
+        class: '%tersoal.dyna_map.schema.subscriber.class%'
+        tags:
+            - {name: doctrine.event_subscriber }
+        arguments:
+            - '%tersoal.dyna_map.master_entity%'
+            - '%tersoal.dyna_map.field_entity%'
+            - '@tersoal.dyna_map.model.tool'
+
+    tersoal.dyna_map.mastertype.extension:
+        class: '%tersoal.dyna_map.mastertype.extension.class%'
+        arguments:
+            - '%tersoal.dyna_map.master_entity%'
+            - '@doctrine.orm.entity_manager'
+            - '@tersoal.dyna_map.model.tool'
+        tags:
+            - {name: form.type_extension, alias: form, extended_type: form }
+
+    tersoal.dyna_map.fieldtype.extension:
+        class: '%tersoal.dyna_map.fieldtype.extension.class%'
+        arguments:
+            - '%tersoal.dyna_map.field_entity%'
+            - '@tersoal.dyna_map.fieldtype.service'
+        tags:
+            - {name: form.type_extension, alias: form, extended_type: form }
+
+    tersoal.dyna_map.modeltype.extension:
+        class: '%tersoal.dyna_map.modeltype.extension.class%'
+        arguments:
+            - '%tersoal.dyna_map.model.route.parameter%'
+            - '@request_stack'
+            - '@doctrine.orm.entity_manager'
+            - '@tersoal.dyna_map.model.tool'
+        tags:
+            - {name: form.type_extension, alias: form, extended_type: form }
+
+    tersoal.dyna_map.fieldtype.service:
+        class: '%tersoal.dyna_map.fieldtype.service.class%'
+        arguments:
+            - '%tersoal.dyna_map.master_entity%'
+            - '%tersoal.dyna_map.field_entity%'
+            - '%tersoal.dyna_map.fields.white_list%'
+            - '%tersoal.dyna_map.fields.black_list%'
+            - '@cocur_slugify'
+
+    tersoal.dyna_map.model.tool:
+        class: '%tersoal.dyna_map.model.tool.class%'
+        arguments:
+            - '%tersoal.dyna_map.master_entity%'
+            - '%tersoal.dyna_map.model.interface.class%'
+            - '@tersoal.dyna_map.fieldtype.service'
+
+    tersoal.dyna_map.command.update_schema:
+        class: '%tersoal.dyna_map.command.update_schema.class%'
+        arguments:
+            - '@tersoal.dyna_map.model.tool'
+        tags:
+            -  { name: console.command }
+
+    tersoal.dyna_map.model.twig_extension:
+        class: '%tersoal.dyna_map.model.twig_extension.class%'
+        public: false
+        arguments:
+            - '%tersoal.dyna_map.model.route.parameter%'
+            - '@request_stack'
+            - '@doctrine.orm.entity_manager'
+            - '@tersoal.dyna_map.model.tool'
+        tags:
+            - { name: twig.extension }
